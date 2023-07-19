@@ -1,0 +1,105 @@
+package gr.aueb.cf.schoolapp.service;
+
+import gr.aueb.cf.schoolapp.dao.ICityDAO;
+import gr.aueb.cf.schoolapp.dao.exceptions.CityDAOException;
+import gr.aueb.cf.schoolapp.dao.exceptions.TeacherDAOException;
+import gr.aueb.cf.schoolapp.dao.exceptions.UserDAOException;
+import gr.aueb.cf.schoolapp.dto.CityInsertDTO;
+import gr.aueb.cf.schoolapp.dto.CityUpdateDTO;
+import gr.aueb.cf.schoolapp.model.City;
+import gr.aueb.cf.schoolapp.model.User;
+import gr.aueb.cf.schoolapp.service.exceptions.CityNotFoundException;
+
+import java.util.List;
+
+public class CityServiceImpl implements ICityService {
+    private ICityDAO cityDAO;
+
+    public CityServiceImpl(ICityDAO cityDAO) {
+        this.cityDAO = cityDAO;
+    }
+
+    @Override
+    public City insertCity(CityInsertDTO dto) throws CityDAOException {
+        if (dto == null) return null;
+        City city;
+        try {
+            city = map(dto);
+            return cityDAO.insert(city);
+        }  catch (CityDAOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+
+    }
+
+    @Override
+    public City updateCity(CityUpdateDTO dto) throws CityDAOException, CityNotFoundException {
+        if (dto == null) return null;
+        City city ;
+        try {
+            city = map(dto);
+
+            if (cityDAO.getById(city.getId()) == null) {
+                throw new CityNotFoundException(city);
+            }
+            return cityDAO.update(city);
+        }catch (CityDAOException | CityNotFoundException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Override
+    public void deleteCity(int id) throws CityDAOException, CityNotFoundException {
+        City city;
+        try {
+            city = cityDAO.getById(id);
+
+            if (city == null) {
+                throw new CityNotFoundException("City with id: " + id + " was not found");
+            }
+            cityDAO.delete(id);
+        } catch (CityDAOException | CityNotFoundException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    @Override
+    public List<City> getCitiesByCityName(String name) throws CityDAOException {
+        List<City> cities;
+        try {
+           cities= cityDAO.getByCityName(name);
+            return cities;
+        } catch (CityDAOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+
+
+    @Override
+    public City getCityById(int id) throws CityDAOException, CityNotFoundException {
+        City city;
+        try {
+            city = cityDAO.getById(id);
+
+            if (city == null) {
+                throw new CityNotFoundException("Search Error: City with id: " + id + " was not found");
+            }
+            return city;
+        } catch (CityDAOException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
+
+    private City map(CityInsertDTO dto) {
+        return new City(null, dto.getName());
+    }
+
+    private City map(CityUpdateDTO dto) {return new City(dto.getId(), dto.getName());
+    }
+}
