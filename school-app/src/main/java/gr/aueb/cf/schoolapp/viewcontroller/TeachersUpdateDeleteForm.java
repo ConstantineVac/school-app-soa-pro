@@ -246,13 +246,20 @@
 package gr.aueb.cf.schoolapp.viewcontroller;
 
 import gr.aueb.cf.schoolapp.Main;
+import gr.aueb.cf.schoolapp.dao.ISpecialityDAO;
 import gr.aueb.cf.schoolapp.dao.ITeacherDAO;
+import gr.aueb.cf.schoolapp.dao.SpecialityDAOImpl;
 import gr.aueb.cf.schoolapp.dao.TeacherDAOImpl;
+import gr.aueb.cf.schoolapp.dao.exceptions.SpecialityDAOException;
 import gr.aueb.cf.schoolapp.dao.exceptions.TeacherDAOException;
 import gr.aueb.cf.schoolapp.dto.TeacherUpdateDTO;
+import gr.aueb.cf.schoolapp.model.Speciality;
 import gr.aueb.cf.schoolapp.model.Teacher;
+import gr.aueb.cf.schoolapp.service.ISpecialityService;
 import gr.aueb.cf.schoolapp.service.ITeacherService;
+import gr.aueb.cf.schoolapp.service.SpecialityServiceImpl;
 import gr.aueb.cf.schoolapp.service.TeacherServiceImpl;
+import gr.aueb.cf.schoolapp.service.exceptions.SpecialityNotFoundException;
 import gr.aueb.cf.schoolapp.service.exceptions.TeacherNotFoundException;
 
 import javax.swing.*;
@@ -287,7 +294,11 @@ public class TeachersUpdateDeleteForm extends JFrame {
 	private ITeacherDAO dao = new TeacherDAOImpl();
 	private ITeacherService teacherService = new TeacherServiceImpl(dao);
 
+	private ISpecialityDAO sDAO = new SpecialityDAOImpl();
+	private ISpecialityService specialityService = new SpecialityServiceImpl(sDAO);
+
 	private List<Teacher> teachers;
+	private List<Speciality> specialities;
 	private int listPosition;
 	private int listSize;
 
@@ -302,6 +313,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 				setTitle("Ενημέρωση/Απαλοιφή");
 				try {
 					teachers = teacherService.getTeachersByLastname(Main.getTeacherSearchForm().getLastname());
+					specialities = specialityService.getSpecialitiesByTitle(Main.getSpecialitySearchForm().getSpeciality());
 					listSize = teachers.size();
 					if (listSize == 0) {
 						JOptionPane.showMessageDialog(null, "No Teachers Found", "Info", JOptionPane.ERROR_MESSAGE);
@@ -313,10 +325,10 @@ public class TeachersUpdateDeleteForm extends JFrame {
 					idTxt.setText(Integer.toString(teachers.get(listPosition).getId()));
 					firstnameTxt.setText(teachers.get(listPosition).getFirstname());
 					lastnameTxt.setText(teachers.get(listPosition).getLastname());
-					specialityTxt.setText(String.valueOf(teachers.get(listPosition).getSpecialityId()));
+					specialityTxt.setText(specialities.get(listPosition).getSpeciality());
 					ssnTxt.setText(String.valueOf(teachers.get(listPosition).getSsn()));
 					uIdTxt.setText(Integer.toString(teachers.get(listPosition).getUserId()));
-				} catch (TeacherDAOException e1) {
+				} catch (TeacherDAOException | SpecialityDAOException e1) {
 					String message = e1.getMessage();
 					JOptionPane.showMessageDialog(null, message, "Error in getting teachers", JOptionPane.ERROR_MESSAGE);
 				}
@@ -341,6 +353,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 		idTxt.setBounds(151, 32, 144, 20);
 		contentPane.add(idTxt);
 		idTxt.setColumns(10);
+		idTxt.setEditable(false);
 
 		JLabel uIdLbl = new JLabel("User ID");
 		uIdLbl.setBounds(65, 64, 76, 14);
@@ -352,6 +365,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 		uIdTxt.setBounds(151, 61, 144, 20);
 		contentPane.add(uIdTxt);
 		uIdTxt.setColumns(10);
+		uIdTxt.setEditable(false);
 
 		JLabel nameLbl = new JLabel("Firstname");
 		nameLbl.setBounds(65, 93, 76, 14);
@@ -388,6 +402,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 		specialityTxt.setBounds(151, 179, 144, 20);
 		contentPane.add(specialityTxt);
 		specialityTxt.setColumns(10);
+		specialityTxt.setEditable(false);
 
 
 		deleteBtn = new JButton("Delete");
@@ -441,6 +456,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 					teacherDTO.setUserId(teachers.get(listPosition).getUserId()); // Set the user ID
 					teacherDTO.setSpecialityId(Integer.parseInt(spId)); // Set the speciality ID
 
+
 					Teacher teacher = teacherService.updateTeacher(teacherDTO);
 					JOptionPane.showMessageDialog(null, "Teacher with id " + teacher.getId() + " was updated", "UPDATE", JOptionPane.PLAIN_MESSAGE);
 				} catch (TeacherDAOException | TeacherNotFoundException e1) {
@@ -461,7 +477,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 					idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
 					lastnameTxt.setText(teachers.get(listPosition).getLastname());
 					firstnameTxt.setText(teachers.get(listPosition).getFirstname());
-					specialityTxt.setText(String.valueOf(teachers.get(listPosition).getSpecialityId()));
+					specialityTxt.setText(specialities.get(listPosition).getSpeciality());
 					ssnTxt.setText(String.valueOf(teachers.get(listPosition).getSsn()));
 					uIdTxt.setText(String.valueOf(teachers.get(listPosition).getUserId()));
 
@@ -483,7 +499,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 					idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
 					lastnameTxt.setText(teachers.get(listPosition).getLastname());
 					firstnameTxt.setText(teachers.get(listPosition).getFirstname());
-					specialityTxt.setText(String.valueOf(teachers.get(listPosition).getSpecialityId()));
+					specialityTxt.setText(specialities.get(listPosition).getSpeciality());
 					ssnTxt.setText(String.valueOf(teachers.get(listPosition).getSsn()));
 					uIdTxt.setText(String.valueOf(teachers.get(listPosition).getUserId()));
 				}
@@ -504,7 +520,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 				idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
 				lastnameTxt.setText(teachers.get(listPosition).getLastname());
 				firstnameTxt.setText(teachers.get(listPosition).getFirstname());
-				specialityTxt.setText(String.valueOf(teachers.get(listPosition).getSpecialityId()));
+				specialityTxt.setText(specialities.get(listPosition).getSpeciality());
 				ssnTxt.setText(String.valueOf(teachers.get(listPosition).getSsn()));
 				uIdTxt.setText(String.valueOf(teachers.get(listPosition).getUserId()));
 			}
@@ -524,7 +540,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 				idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
 				lastnameTxt.setText(teachers.get(listPosition).getLastname());
 				firstnameTxt.setText(teachers.get(listPosition).getFirstname());
-				specialityTxt.setText(String.valueOf(teachers.get(listPosition).getSpecialityId()));
+				specialityTxt.setText(specialities.get(listPosition).getSpeciality());
 				ssnTxt.setText(String.valueOf(teachers.get(listPosition).getSsn()));
 				uIdTxt.setText(String.valueOf(teachers.get(listPosition).getUserId()));
 			}
@@ -546,45 +562,5 @@ public class TeachersUpdateDeleteForm extends JFrame {
 		closeBtn.setFont(new Font("Tahoma", Font.BOLD, 14));
 		closeBtn.setBounds(310, 210, 103, 40);
 		contentPane.add(closeBtn);
-	}
-
-
-
-// No usage for these, might as well delete them.
-
-	private void nextTeacher() {
-		if (listPosition < listSize - 1) {
-			listPosition++;
-			idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
-			lastnameTxt.setText(teachers.get(listPosition).getLastname());
-			firstnameTxt.setText(teachers.get(listPosition).getFirstname());
-		}
-	}
-
-	private void previousTeacher() {
-		if (listPosition > 0) {
-			listPosition--;
-			idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
-			lastnameTxt.setText(teachers.get(listPosition).getLastname());
-			firstnameTxt.setText(teachers.get(listPosition).getFirstname());
-		}
-	}
-
-	private void firstTeacher() {
-		listPosition = 0;
-
-		idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
-		lastnameTxt.setText(teachers.get(listPosition).getLastname());
-		firstnameTxt.setText(teachers.get(listPosition).getFirstname());
-
-	}
-
-	private void lastTeacher() {
-		listPosition = teachers.lastIndexOf(teachers);
-
-		idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
-		lastnameTxt.setText(teachers.get(listPosition).getLastname());
-		firstnameTxt.setText(teachers.get(listPosition).getFirstname());
-
 	}
 }

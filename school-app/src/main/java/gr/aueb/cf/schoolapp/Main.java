@@ -11,9 +11,7 @@ public class Main {
     private static TeacherSearchForm teacherSearchForm;
     private static TeachersUpdateDeleteForm teachersUpdateDeleteForm;
     private static AdminInsertTeachersForm adminInsertTeachersForm;
-
-
-
+    private static SpecialitySearchForm specialitySearchForm;
     private static AdminInsertCitiesForm adminInsertCitiesForm;
     private static CityUpdateDeleteForm  cityUpdateDeleteForm;
 
@@ -35,6 +33,9 @@ public class Main {
 
                     teacherSearchForm = new TeacherSearchForm();
                     teacherSearchForm.setVisible(false);
+
+                    specialitySearchForm = new SpecialitySearchForm();
+                    specialitySearchForm.setVisible(false);
 
                     teachersUpdateDeleteForm = new TeachersUpdateDeleteForm();
                     teachersUpdateDeleteForm.setVisible(false);
@@ -80,5 +81,9 @@ public class Main {
 
     public static  CityUpdateDeleteForm getCityUpdateDeleteForm() {
         return  cityUpdateDeleteForm;
+    }
+
+    public static SpecialitySearchForm getSpecialitySearchForm() {
+        return specialitySearchForm;
     }
 }
