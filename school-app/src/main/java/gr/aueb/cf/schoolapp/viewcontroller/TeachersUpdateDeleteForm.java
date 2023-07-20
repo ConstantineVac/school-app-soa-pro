@@ -271,12 +271,18 @@ public class TeachersUpdateDeleteForm extends JFrame {
 	private JTextField idTxt;
 	private JTextField firstnameTxt;
 	private JTextField lastnameTxt;
-	private JTextField cityTxt;
 	private JTextField specialityTxt;
+	private JTextField ssnTxt;
+	private JTextField uIdTxt;
 	private JButton deleteBtn;
 	private JButton updateBtn;
 	private JButton nextBtn;
 	private JButton previousBtn;
+
+	private JButton firstBtn;
+	private JButton lastBtn;
+
+	private JButton closeBtn;
 
 	private ITeacherDAO dao = new TeacherDAOImpl();
 	private ITeacherService teacherService = new TeacherServiceImpl(dao);
@@ -307,6 +313,9 @@ public class TeachersUpdateDeleteForm extends JFrame {
 					idTxt.setText(Integer.toString(teachers.get(listPosition).getId()));
 					firstnameTxt.setText(teachers.get(listPosition).getFirstname());
 					lastnameTxt.setText(teachers.get(listPosition).getLastname());
+					specialityTxt.setText(String.valueOf(teachers.get(listPosition).getSpecialityId()));
+					ssnTxt.setText(String.valueOf(teachers.get(listPosition).getSsn()));
+					uIdTxt.setText(Integer.toString(teachers.get(listPosition).getUserId()));
 				} catch (TeacherDAOException e1) {
 					String message = e1.getMessage();
 					JOptionPane.showMessageDialog(null, message, "Error in getting teachers", JOptionPane.ERROR_MESSAGE);
@@ -333,41 +342,53 @@ public class TeachersUpdateDeleteForm extends JFrame {
 		contentPane.add(idTxt);
 		idTxt.setColumns(10);
 
+		JLabel uIdLbl = new JLabel("User ID");
+		uIdLbl.setBounds(65, 64, 76, 14);
+		contentPane.add(uIdLbl);
+
+		uIdTxt = new JTextField();
+		uIdTxt.setForeground(new Color(128, 0, 0));
+		uIdTxt.setFont(new Font("Tahoma", Font.BOLD, 14));
+		uIdTxt.setBounds(151, 61, 144, 20);
+		contentPane.add(uIdTxt);
+		uIdTxt.setColumns(10);
+
 		JLabel nameLbl = new JLabel("Firstname");
-		nameLbl.setBounds(65, 75, 76, 14);
+		nameLbl.setBounds(65, 93, 76, 14);
 		contentPane.add(nameLbl);
 
 		firstnameTxt = new JTextField();
-		firstnameTxt.setBounds(151, 72, 144, 20);
+		firstnameTxt.setBounds(151, 90, 144, 20);
 		contentPane.add(firstnameTxt);
 		firstnameTxt.setColumns(10);
 
 		JLabel lastnameLbl = new JLabel("Lastname");
-		lastnameLbl.setBounds(65, 102, 76, 14);
+		lastnameLbl.setBounds(65, 122, 76, 14);
 		contentPane.add(lastnameLbl);
 
 		lastnameTxt = new JTextField();
-		lastnameTxt.setBounds(151, 102, 144, 20);
+		lastnameTxt.setBounds(151, 119, 144, 20);
 		contentPane.add(lastnameTxt);
 		lastnameTxt.setColumns(10);
 
-		JLabel cityLbl = new JLabel("City");
-		cityLbl.setBounds(65, 132, 76, 14);
-		contentPane.add(cityLbl);
+		JLabel ssnLbl = new JLabel("SSN");
+		ssnLbl.setBounds(65, 152, 76, 14);
+		contentPane.add(ssnLbl);
 
-		cityTxt = new JTextField();
-		cityTxt.setBounds(151, 132, 144, 20);
-		contentPane.add(cityTxt);
-		cityTxt.setColumns(10);
+		ssnTxt = new JTextField();
+		ssnTxt.setBounds(151, 149, 144, 20);
+		contentPane.add(ssnTxt);
+		ssnTxt.setColumns(10);
 
 		JLabel specialityLbl = new JLabel("Speciality");
-		specialityLbl.setBounds(65, 162, 76, 14);
+		specialityLbl.setBounds(65, 182, 76, 14);
 		contentPane.add(specialityLbl);
 
 		specialityTxt = new JTextField();
-		specialityTxt.setBounds(151, 162, 144, 20);
+		specialityTxt.setBounds(151, 179, 144, 20);
 		contentPane.add(specialityTxt);
 		specialityTxt.setColumns(10);
+
 
 		deleteBtn = new JButton("Delete");
 		deleteBtn.addActionListener(new ActionListener() {
@@ -391,7 +412,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 		});
 		deleteBtn.setForeground(Color.BLUE);
 		deleteBtn.setFont(new Font("Tahoma", Font.BOLD, 14));
-		deleteBtn.setBounds(320, 160, 89, 23);
+		deleteBtn.setBounds(180, 210, 89, 23);
 		contentPane.add(deleteBtn);
 
 		updateBtn = new JButton("Update");
@@ -402,8 +423,11 @@ public class TeachersUpdateDeleteForm extends JFrame {
 				String id = idTxt.getText().trim();
 				String lastname = lastnameTxt.getText().trim();
 				String firstname = firstnameTxt.getText().trim();
+				String ssn = ssnTxt.getText().trim();
+				String spId = specialityTxt.getText().trim();
+				String uId = uIdTxt.getText().trim();
 
-				if (lastname.equals("") || firstname.equals("") || id.equals("")) {
+				if (lastname.equals("") || firstname.equals("") ||  id.equals("")) {
 					JOptionPane.showMessageDialog(null, "Not valid input", "UPDATE ERROR", JOptionPane.ERROR_MESSAGE);
 					return;
 				}
@@ -413,6 +437,9 @@ public class TeachersUpdateDeleteForm extends JFrame {
 					teacherDTO.setId(Integer.parseInt(id));
 					teacherDTO.setFirstname(firstname);
 					teacherDTO.setLastname(lastname);
+					teacherDTO.setSsn(Integer.parseInt(ssn)); // Set the SSN
+					teacherDTO.setUserId(teachers.get(listPosition).getUserId()); // Set the user ID
+					teacherDTO.setSpecialityId(Integer.parseInt(spId)); // Set the speciality ID
 
 					Teacher teacher = teacherService.updateTeacher(teacherDTO);
 					JOptionPane.showMessageDialog(null, "Teacher with id " + teacher.getId() + " was updated", "UPDATE", JOptionPane.PLAIN_MESSAGE);
@@ -422,7 +449,7 @@ public class TeachersUpdateDeleteForm extends JFrame {
 				}
 			}
 		});
-		updateBtn.setBounds(320, 194, 89, 23);
+		updateBtn.setBounds(80, 210, 89, 23);
 		contentPane.add(updateBtn);
 
 		nextBtn = new JButton("");
@@ -430,9 +457,14 @@ public class TeachersUpdateDeleteForm extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (listPosition <= listSize - 2) {
 					listPosition++;
+
 					idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
 					lastnameTxt.setText(teachers.get(listPosition).getLastname());
 					firstnameTxt.setText(teachers.get(listPosition).getFirstname());
+					specialityTxt.setText(String.valueOf(teachers.get(listPosition).getSpecialityId()));
+					ssnTxt.setText(String.valueOf(teachers.get(listPosition).getSsn()));
+					uIdTxt.setText(String.valueOf(teachers.get(listPosition).getUserId()));
+
 				}
 			}
 		});
@@ -447,9 +479,13 @@ public class TeachersUpdateDeleteForm extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if (listPosition > 0) {
 					listPosition--;
+
 					idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
 					lastnameTxt.setText(teachers.get(listPosition).getLastname());
 					firstnameTxt.setText(teachers.get(listPosition).getFirstname());
+					specialityTxt.setText(String.valueOf(teachers.get(listPosition).getSpecialityId()));
+					ssnTxt.setText(String.valueOf(teachers.get(listPosition).getSsn()));
+					uIdTxt.setText(String.valueOf(teachers.get(listPosition).getUserId()));
 				}
 			}
 		});
@@ -458,7 +494,63 @@ public class TeachersUpdateDeleteForm extends JFrame {
 		previousBtn.setIcon(new ImageIcon(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("Previous_record.png"))));
 		previousBtn.setBounds(310, 70, 100, 30);
 		contentPane.add(previousBtn);
+
+		firstBtn = new JButton();
+		firstBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				listPosition = 0;
+
+				idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
+				lastnameTxt.setText(teachers.get(listPosition).getLastname());
+				firstnameTxt.setText(teachers.get(listPosition).getFirstname());
+				specialityTxt.setText(String.valueOf(teachers.get(listPosition).getSpecialityId()));
+				ssnTxt.setText(String.valueOf(teachers.get(listPosition).getSsn()));
+				uIdTxt.setText(String.valueOf(teachers.get(listPosition).getUserId()));
+			}
+		});
+		firstBtn.setForeground(Color.BLUE);
+		firstBtn.setFont(new Font("Tahoma", Font.BOLD, 14));
+		firstBtn.setIcon(new ImageIcon(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("First record.png"))));
+		firstBtn.setBounds(310, 30, 100, 30);
+		contentPane.add(firstBtn);
+
+		lastBtn = new JButton();
+		lastBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				listPosition = teachers.size() - 1;
+
+				idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
+				lastnameTxt.setText(teachers.get(listPosition).getLastname());
+				firstnameTxt.setText(teachers.get(listPosition).getFirstname());
+				specialityTxt.setText(String.valueOf(teachers.get(listPosition).getSpecialityId()));
+				ssnTxt.setText(String.valueOf(teachers.get(listPosition).getSsn()));
+				uIdTxt.setText(String.valueOf(teachers.get(listPosition).getUserId()));
+			}
+		});
+		lastBtn.setForeground(Color.BLUE);
+		lastBtn.setFont(new Font("Tahoma", Font.BOLD, 14));
+		lastBtn.setIcon(new ImageIcon(Objects.requireNonNull(Thread.currentThread().getContextClassLoader().getResource("Last_Record.png"))));
+		lastBtn.setBounds(310, 150, 100, 30);
+		contentPane.add(lastBtn);
+
+		closeBtn = new JButton("Return");
+		closeBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Close the current window
+				dispose();
+			}
+		});
+		closeBtn.setForeground(new Color(0, 0, 255));
+		closeBtn.setFont(new Font("Tahoma", Font.BOLD, 14));
+		closeBtn.setBounds(310, 210, 103, 40);
+		contentPane.add(closeBtn);
 	}
+
+
+
+// No usage for these, might as well delete them.
 
 	private void nextTeacher() {
 		if (listPosition < listSize - 1) {
@@ -476,5 +568,23 @@ public class TeachersUpdateDeleteForm extends JFrame {
 			lastnameTxt.setText(teachers.get(listPosition).getLastname());
 			firstnameTxt.setText(teachers.get(listPosition).getFirstname());
 		}
+	}
+
+	private void firstTeacher() {
+		listPosition = 0;
+
+		idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
+		lastnameTxt.setText(teachers.get(listPosition).getLastname());
+		firstnameTxt.setText(teachers.get(listPosition).getFirstname());
+
+	}
+
+	private void lastTeacher() {
+		listPosition = teachers.lastIndexOf(teachers);
+
+		idTxt.setText(String.valueOf(teachers.get(listPosition).getId()));
+		lastnameTxt.setText(teachers.get(listPosition).getLastname());
+		firstnameTxt.setText(teachers.get(listPosition).getFirstname());
+
 	}
 }

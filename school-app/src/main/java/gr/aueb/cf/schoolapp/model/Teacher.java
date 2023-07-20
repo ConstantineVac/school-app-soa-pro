@@ -59,7 +59,12 @@ public class Teacher {
         this.lastname = lastname;
     }
 
-    public Integer getSsn() {
+    public int getSsn() {
+        if (ssn == null) {
+            // Handle the case when ssn is null, e.g., throw an exception or return a default value
+            // throw new IllegalStateException("SSN is not set for this teacher");
+            return 0;
+        }
         return ssn;
     }
 
